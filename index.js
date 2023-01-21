@@ -43,21 +43,26 @@ app.use(cors());
 
 app.use("/upload", express.static(path.join(__dirname, "uploads")));
 
-mongoose.set("strictQuery", false);
+mongoose.set("strictQuery", true);
 
 async function main() {
   // await mongoose.connect("mongodb://127.0.0.1:27017/multerLearning");
-  await mongoose.connect("mongodb+srv://connect-db:1xp5KCxVCGVC2QgE@cluster0.teacx.mongodb.net/multerLearning");
-  
+  await mongoose.connect("mongodb+srv://connect-db:1xp5KCxVCGVC2QgE@cluster0.teacx.mongodb.net/multerLearning",{
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    // useCreateIndex: true,
+  });
+  // await mongoose.connect("mongodb+srv://multerLearning:1xp5KCxVCGVC2QgE@cluster0.teacx.mongodb.net/?retryWrites=true&w=majority");
 
-
-  
-
+  // mongodb+srv://nayeemFucker@cluster0.uni3uy1.mongodb.net/?retryWrites=true&w=majority
 }
 
+
+
+
 main()
-  .then(() => console.log("connect successfully.."))
-  .catch((err) => console.log(err));
+  // .then(() => console.log("connect successfully.."))
+  // .catch((err) => console.log(err));
 
 const multerSchema = new mongoose.Schema({
   name: {
@@ -95,7 +100,10 @@ app.post("/", upload.single("images"), async (req, res) => {
       images :img,
     };
 
-    const data =await ModelMulter.create(value);
+    const data= new ModelMulter(value);
+    const result = await data.save();
+
+    // const data =await ModelMulter.create(value);
 
     res.send({
       status: "success",
@@ -112,3 +120,4 @@ app.post("/", upload.single("images"), async (req, res) => {
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT);
+// https://nayeem-multer-backend.up.railway.app/
