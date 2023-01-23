@@ -3,6 +3,8 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const multer = require("multer");
 const path = require("path");
+// https://nayeem-multer-backend.up.railway.app/
+// http://localhost:3000
 
 //storage
 
@@ -46,23 +48,16 @@ app.use("/upload", express.static(path.join(__dirname, "uploads")));
 mongoose.set("strictQuery", true);
 
 async function main() {
-  // await mongoose.connect("mongodb://127.0.0.1:27017/multerLearning");
-  await mongoose.connect("mongodb+srv://connect-db:1xp5KCxVCGVC2QgE@cluster0.teacx.mongodb.net/multerLearning",{
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    // useCreateIndex: true,
-  });
-  // await mongoose.connect("mongodb+srv://multerLearning:1xp5KCxVCGVC2QgE@cluster0.teacx.mongodb.net/?retryWrites=true&w=majority");
+  const uri =
+    "mongodb+srv://connect-db:1xp5KCxVCGVC2QgE@cluster0.teacx.mongodb.net/multerLearning";
+  await mongoose.connect(uri);
 
-  // mongodb+srv://nayeemFucker@cluster0.uni3uy1.mongodb.net/?retryWrites=true&w=majority
+  // await mongoose.connect("mongodb+srv://connect-db:1xp5KCxVCGVC2QgE@cluster0.teacx.mongodb.net/multerLearning");
 }
 
-
-
-
 main()
-  // .then(() => console.log("connect successfully.."))
-  // .catch((err) => console.log(err));
+  .then(() => console.log("connect successfully.."))
+  .catch((err) => console.log(err));
 
 const multerSchema = new mongoose.Schema({
   name: {
@@ -93,28 +88,30 @@ app.get("/", async (req, res) => {
 app.post("/", upload.single("images"), async (req, res) => {
   const url = req.protocol + "://" + req.get("host");
   const img = url + "/upload/" + req.file.filename;
+  console.log(img)
+  res.send(img);
+  // try {
+  //   const value = {
+  //     name: req.body.name,
+  //     images: img,
+  //   };
 
-  try {
-    const value = {
-      name: req.body.name,
-      images :img,
-    };
+  //   const data = new ModelMulter(value);
+  //   const result = await data.save();
 
-    const data= new ModelMulter(value);
-    const result = await data.save();
+  //   // const data =await ModelMulter.create(value);
 
-    // const data =await ModelMulter.create(value);
+  //   res.send({
+  //     status: "success",
+  //     // data,
+  //     value,
+  //   });
 
-    res.send({
-      status: "success",
-      // data,
-      value,
-    });
-  } catch (error) {
-    res.send({
-      message: error.message,
-    });
-  }
+  // } catch (error) {
+  //   res.send({
+  //     message: error.message,
+  //   });
+  // }
 });
 
 const PORT = process.env.PORT || 3000;
