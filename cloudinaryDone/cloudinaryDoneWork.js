@@ -3,31 +3,34 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const multer = require("multer");
 const path = require("path");
+const cloudinary = require("cloudinary");
 
-//firebase config
-const firebase = require('firebase-admin');
+cloudinary.v2.config ({
+  cloud_name: 'dgurwyvxj',
+  api_key: 236641591756711,
+  api_secret: 'Bm6MRSmZT8LBxXHFwXYlRFwWNh0'
 
-// Initialize Firebase
-const serviceAccount = require('./fileuploader.json');
-firebase.initializeApp({
-  credential: firebase.credential.cert(serviceAccount),
-  storageBucket: "gs://fileuploader-901cb.appspot.com"
+
+})
+/**
+ * client_name: dgurwyvxj
+ * clent_api_key: 236641591756711
+ *  client_api_secret: Bm6MRSmZT8LBxXHFwXYlRFwWNh0
+*/
+// https://nayeem-multer-backend.up.railway.app/
+// http://localhost:3000
+
+//storage
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "uploads/");
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, file.fieldname + "-" + uniqueSuffix + file.originalname);
+  },
 });
-
-// Get a reference to the storage service
-const Firestorage = firebase.storage();
-
-// const storage = multer.diskStorage({
-//   destination: function (req, file, cb) {
-//     cb(null, "uploads/");
-//   },
-//   filename: function (req, file, cb) {
-//     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-//     cb(null, file.fieldname + "-" + uniqueSuffix + file.originalname);
-//   },
-// });
-
-const storage = multer.memoryStorage()
 
 //main upload
 
@@ -102,47 +105,37 @@ app.post("/", upload.single("images"), async (req, res) => {
   console.log(req.file)
 
 
-  const fileRef = Firestorage.bucket().file(`images/${req.file.originalname}`);
-
-  const stream = fileRef.createWriteStream({
-    metadata: {
-      contentType: req.file.mimetype
-    }
+  const upload = await cloudinary.v2.uploader.upload(req.file.path)
+  res.send({
+    status: "success",
+    upload : upload.url,
+    name : req.body.name
   });
+  // try {
+  //   const value = {
+  //     name: req.body.name,
+  //     images: img,
+  //   };
 
-  // Write the file to Firebase
-  stream.on('error', (err) => {
-    console.error(err);
-    res.status(500).send(err);
-  });
+  //   const data = new ModelMulter(value);
+  //   const result = await data.save();
 
-  stream.on('finish',async () => {
+  //   // const data =await ModelMulter.create(value);
 
-     imageURL = await fileRef.getSignedUrl({
-      action: 'read',
-      expires: '03-09-2491'
-    });
+  //   res.send({
+  //     status: "success",
+  //     // data,
+  //     value,
+  //   });
 
-    res.send(imageURL);
-
-    // console.log(`File ${req.file.originalname} uploaded successfully.`);
-
-  });
-
-  stream.end(req.file.buffer);
-
-
-  // res.send({
-  //   status: "success",
-  //   upload : uploadDone(),
-  //   // name : req.body.name
-  // });
-  
+  // } catch (error) {
+  //   res.send({
+  //     message: error.message,
+  //   });
+  // }
 });
 
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT);
 // https://nayeem-multer-backend.up.railway.app/
-
-

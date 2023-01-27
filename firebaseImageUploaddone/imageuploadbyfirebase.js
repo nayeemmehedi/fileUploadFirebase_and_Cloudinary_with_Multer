@@ -145,4 +145,22 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT);
 // https://nayeem-multer-backend.up.railway.app/
 
+// memory address  verify that what type things i need 
 
+// const acceptedImageTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+// const storage = multer.memoryStorage();
+// const upload = multer({ storage: storage }).single('file');
+
+// app.post('/upload', (req, res) => {
+//   upload(req, res, (err) => {
+//     if (err) {
+//       return res.status(400).send(err);
+//     }
+
+//     if (!acceptedImageTypes.includes(req.file.mimetype)) {
+//       return res.status(415).send('Invalid file type. Only jpeg, jpg and png images are accepted.');
+//     }
+
+//     // continue with the rest of your code
+//   });
+// });
